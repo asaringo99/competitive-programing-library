@@ -46,6 +46,15 @@ struct LCA{
             }
         }
 
+        //k個前のノードを求める
+        int prev_k_(int v, int k){
+            for(int i = 0; i < 19; i++) if(k >> i & 1) {
+                v = parent[v][i];
+                if(v == -1) return v;
+            }
+            return v;
+        }
+
         //LCAを求める
         int get_lca_(int u , int v){
             if(dist[u] < dist[v]) swap(u,v) ;
@@ -82,6 +91,7 @@ struct LCA{
         }
         void build() { build_() ; }
         void add_edge(int u , int v) { add_edge_(u,v) ; }
+        int prev_k(int v, int k) { return prev_k_(v,k); }
         int get_lca(int u , int v) { return get_lca_(u,v) ; }
         int dist_u_to_v(int u , int v) { return dist_u_to_v_(u,v) ; }
         bool node_is_on_path(int u , int v , int node){ return node_is_on_path_(u,v,node) ; }
@@ -94,6 +104,7 @@ struct LCA{
 // add_edge(u,v)             : void                : u -> v, v -> u に辺を張る
 // get_lca(u,v)              : int                 : u と v の LCA を求める
 // dist_u_to_v(u,v)          : int                 : u と v の距離を求める
+// prev_k(v,k)               : int                 : v の k 個前の祖先を取得する
 // node_is_on_path(u,v,node) : bool                : u と v のパス上に node があるか
 // get_gragh                 : vector<vector<int>> : グラフ G を返す
 // *注意* 取り敢えず全てをコピペすることを奨励
