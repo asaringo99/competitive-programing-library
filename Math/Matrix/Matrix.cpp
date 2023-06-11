@@ -94,7 +94,7 @@ struct ModInt {
 
 using modint = ModInt< mod >;
 
-template<typename T = ll> struct Matrix{
+template<typename T> struct Matrix{
     int row, col;
     vector<vector<T>> mat ;
 
@@ -194,6 +194,8 @@ template<typename T = ll> struct Matrix{
             vector<vector<T>> res(x,vector<T>(y));
             rep(i,x) rep(j,y) rep(k,n) res[i][j] += mat[i][k] * Y.mat[k][j];
             swap(mat,res);
+            row = x;
+            col = y;
             return *this ;
         }
 
@@ -231,23 +233,6 @@ template<typename T = ll> struct Matrix{
         void concat_row(Matrix &Y) { concat_row_(Y); }
         void print() { print_(); }
 };
-
-// function                     : return              : description
-// -----------------------------------------------------
-// init(vector<T>, row_matrix)    : void                : 1次元ベクトルに対して行列化する, 列行列か行行列を選択できる
-// init(vector<vector<T>>)        : void                : 2次元ベクトルに対して行列化する
-// row_size()                     : int                 : 行の大きさ
-// col_size()                     : int                 : 列の大きさ
-// pow(k)                         : Matrix              : 行列をk乗する(n * n 行列であること)
-// transpose()                    : void                : 転置する
-// concat_col(vector<vector<T>>)  : void                : 列に関して結合する
-// concat_col(vector<T>)          : void                : 列に関して結合する
-// concat_col(Matrix)             : void                : 列に関して結合する
-// concat_row(vector<vector<T>>)  : void                : 列に関して結合する
-// concat_row(vector<T>)          : void                : 列に関して結合する
-// concat_row(Matrix)             : void                : 列に関して結合する
-// print()                        : void                : 行列を出力する
-// *注意* 取り敢えず全てをコピペすることを奨励
 
 // verify
 // https://atcoder.jp/contests/dp/tasks/dp_r
