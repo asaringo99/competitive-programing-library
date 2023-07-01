@@ -89,26 +89,41 @@ template<class E, class V, E (*merge)(E, E), E (*e)(), E (*put_edge)(V, int), V 
         }
 };
 
+vector<ll> A, B, C, D;
+
 namespace monoid {
-    struct V {ll value, child;};
-    struct E {ll value, child;};
-    E e() { return E{0, 0}; }
-    E merge(E x, E y) { return E{x.value + y.value, x.child + y.child}; }
-    E put_edge(V v, int idx) { return E{v.value + v.child, v.child}; }
-    V put_vertex(E e, int v) { return V{e.value, e.child + 1}; }
+    struct V {ll value, sub;};
+    struct E {ll value;};
+    E e() { return E{0}; }
+    E merge(E x, E y) { return E{max(x.value, y.value)}; }
+    E put_edge(V v, int idx) { return E{v.value + C[idx]}; }
+    V put_vertex(E e, int v) { return V{max(e.value, D[v]), min(e.value, D[v])}; }
 } using namespace monoid;
 
 int main(){
     int n;
     cin >> n;
+    A = vector<ll>(n-1);
+    B = vector<ll>(n-1);
+    C = vector<ll>(n-1);
+    D = vector<ll>(n);
     RetootingDP<E, V, merge, e, put_edge, put_vertex> g(n);
     rep(i,n-1){
-        int u , v ;
-        cin >> u >> v ;
+        int u , v;
+        ll w;
+        cin >> u >> v >> w;
         u-- ; v-- ;
+        A[i] = u;
+        B[i] = v;
+        C[i] = w;
         g.add_edge(u,v,i,i);
     }
+    cin >> D;
     g.build();
     ll res = 0;
-    for(V r : g.getRerootingDpResult()) pt(r.value);
+    auto r = g.getRerootingDpResult();
+    rep(i,n){
+        if(D[i] == r[i].value) pt(r[i].sub);
+        else pt(r[i].value);
+    }
 }
