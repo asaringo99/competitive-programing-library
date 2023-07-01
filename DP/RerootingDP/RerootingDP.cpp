@@ -90,6 +90,11 @@ template<class E, class V, E (*merge)(E, E), E (*e)(), E (*put_edge)(V, int), V 
 };
 
 namespace monoid {
+    // V := dp[v]のような感じ, dp[v][3]のように表現したい場合は、V{ll dp1, dp2, dp3;}のように定義すると良さそう
+    // E := 辺が運んでるdpの値, 適宜構造体の中身を変える。ex: E{value1, value2, child;}
+    // merge: 辺同士をマージする、直感的に記述すれば大体当たる
+    // put_edge: あるノードに格納されているdp値を辺番号idxの辺を使ってどのように運ぶかを定義する
+    // put_vertex: ある辺が運んできた値を、どのように頂点vに配置するか記述する
     struct V {ll value;};
     struct E {ll value;};
     E merge(E x, E y) { return E{x.value * y.value}; }
