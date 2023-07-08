@@ -24,37 +24,37 @@ template<typename S, S (*op)(S, S), S (*mapping)(S, S), S (*e)()> struct Segment
             n = 1;
             log = 0;
             while(n < n_) n *= 2, log++;
-            node.resize(2*n-1,e());
-            for(int i = 0; i < n_; i++) node[n-1+i] = V[i];
-            for(int i = n - 2; i >= 0; i--) node[i] = op(node[2*i+1], node[2*i+2]);
+            node.resize(2*n,e());
+            for(int i = 0; i < n_; i++) node[n+i] = V[i];
+            for(int i = n - 1; i >= 1; i--) node[i] = op(node[2*i], node[2*i+1]);
         }
         
         void apply_(int k, S x){
-            k += n - 1;
+            k += n ;
             node[k] = mapping(node[k],x);
             while(k > 0){
-                k = (k - 1) / 2;
-                node[k] = op(node[2*k+1], node[2*k+2]);
+                k = k / 2;
+                node[k] = op(node[2*k], node[2*k+1]);
             }
         }
 
-        S get_(int k) const { return node[k+n-1]; }
+        S get_(int k) const { return node[k+n]; }
 
         S prod_(int l, int r) const {
             S lval = e(), rval = e();
-            l += n - 1;
-            r += n - 1;
+            l += n;
+            r += n;
 
             while(l < r){
-                if(!(l & 1)) lval = op(lval, node[l++]);
-                if(!(r & 1)) rval = op(rval, node[--r]);
+                if(l & 1) lval = op(lval, node[l++]);
+                if(r & 1) rval = op(node[--r], rval);
                 l >>= 1;
                 r >>= 1;
             }
             return op(lval, rval);
         }
 
-        S all_prod_() const { return node[0]; }
+        S all_prod_() const { return node[1]; }
 
         template<bool (*f)(S)> int max_right_(int l) const {
             return max_right_(l, [](S x) { return f(x); });
@@ -67,17 +67,17 @@ template<typename S, S (*op)(S, S), S (*mapping)(S, S), S (*e)()> struct Segment
 
             do {
                 while(l % 2 == 0) l >>= 1;
-                if(!f(op(sval, node[l-1]))) {
+                if(!f(op(sval, node[l]))) {
                     while(l < n){
                         l = 2 * l;
-                        if(f(op(sval, node[l-1]))) {
-                            sval = op(sval, node[l-1]);
+                        if(f(op(sval, node[l]))) {
+                            sval = op(sval, node[l]);
                             l++;
                         }
                     }
                     return l - n;
                 }
-                sval = op(sval, node[l-1]);
+                sval = op(sval, node[l]);
                 l++;
             } while ((l & -l) != l);
 
@@ -89,22 +89,24 @@ template<typename S, S (*op)(S, S), S (*mapping)(S, S), S (*e)()> struct Segment
         }
 
         template<typename F> int min_left_(int r, F f) const {
+
             r += n;
             S sval = e();
+
             do {
                 r--;
                 while(r > 1 && r & 1) r >>= 1;
-                if(!f(op(sval, node[r-1]))) {
+                if(!f(op(node[r],sval))) {
                     while(r < n) {
                         r = 2*r+1;
-                        if(f(op(sval, node[r-1]))) {
-                            sval = op(sval,node[r-1]);
+                        if(f(op(node[r],sval))) {
+                            sval = op(node[r],sval);
                             r--;
                         }
                     }
                     return r + 1 - n;
                 }
-                sval = op(sval, node[r-1]);
+                sval = op(node[r],sval);
             } while((r & -r) != r);
 
             return 0;
@@ -120,7 +122,6 @@ template<typename S, S (*op)(S, S), S (*mapping)(S, S), S (*e)()> struct Segment
         S all_prod() const { return all_prod_(); }
         template<bool (*f)(S)> int max_right(int l) const { return max_right_<f>(l); }
         template<bool (*f)(S)> int min_left(int  r) const { return min_left_<f>(r); }
-
 };
 
 namespace monoid{
